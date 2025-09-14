@@ -91,7 +91,7 @@ A comprehensive AI-powered diet planning application that helps users create per
 
 1. **Clone and navigate to the project**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/realcodedbyom/Satvic-Diet-Planner
    cd Satvic-Diet-Planner
    ```
 
@@ -157,7 +157,7 @@ sudo apt install git -y
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/realcodedbyom/Satvic-Diet-Planner
 cd Satvic-Diet-Planner
 
 # Create environment file
@@ -339,7 +339,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Developed by OM and Team**
 
 - **Lead Developer**: OM
-- **Development Team**: Satvic Diet Planner Team
+- **Development Team**: Team Anshu Priya
 - **AI Integration**: Google Gemini AI
 - **Database**: MongoDB
 - **Framework**: Flask (Python)
