@@ -31,7 +31,7 @@ CORS(app, origins=["*"])
 
 # MongoDB connection
 try:
-    client = MongoClient(os.getenv('MONGODB_URI', 'mongodb+srv://om3479781:omkumar@satvikdiet.shu7as.mongodb.net/?retryWrites=true&w=majority&appName=satvikdiet'))
+    client = MongoClient(os.getenv('MONGODB_URI', 'mongodb_url'))
     db = client.satvic_diet_planner
     logger.info("✅ Connected to MongoDB successfully")
 except Exception as e:
