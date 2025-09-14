@@ -1,0 +1,29 @@
+{
+  "name": "satvic-diet-planner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "echo 'Use Docker or gunicorn to run Flask' && exit 1",
+    "dev": "echo 'Use Flask: python app.py or gunicorn app:app' && exit 1",
+    "migrate": "node scripts/migrate-database.js",
+    "seed": "node scripts/seed-database.js",
+    "build": "echo 'no build step'"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satvic Diet Planner - Nutrition Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-hidden {
+            display: none;
+        }
+        .active-tab {
+            border-bottom: 3px solid #059669;
+            color: #059669;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+        }
+        .chat-message {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        /* Added hamburger menu styles */
+        .hamburger-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 50;
+        }
+        .hamburger-menu.open {
+            right: 0;
+        }
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="bg-green-50 min-h-screen font-sans">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg fixed w-full z-30">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center relative w-full">
+                <div class="absolute left-0 flex items-center">
+                    <i class="fas fa-leaf text-green-600 text-2xl mr-2"></i>
+                </div>
+                <div class="w-full flex justify-center">
+                    <span class="text-xl font-bold text-green-700">Satvic Diet Planner</span>
+                </div>
+                <div id="publicCtas" class="absolute right-0 flex items-center space-x-3">
+                    <button id="navSignIn" class="text-green-700 font-medium hover:underline">
+                        Sign In
+                    </button>
+                    <button id="navGetStarted" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition duration-200">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+            <!-- Replaced navigation with hamburger menu button -->
+            <div class="flex items-center">
+                <button id="hamburgerBtn" class="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition duration-200" style="display: none;">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Added hamburger menu overlay -->
+    <div id="menuOverlay" class="menu-overlay"></div>
+
+    <!-- Added hamburger menu sidebar -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-xl font-bold text-green-700">Menu</h3>
+                <button id="closeMenuBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="space-y-4 mb-8">
+                <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200 active-tab" data-target="dashboard">
+                    <i class="fas fa-home mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Dashboard</span>
+                </a>
+                <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200" data-target="meal-plan">
+                    <i class="fas fa-calendar-alt mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Meal Plan</span>
+                </a>
+                <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200" data-target="recipes">
+                    <i class="fas fa-utensils mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Recipes</span>
+                </a>
+                <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200" data-target="shopping">
+                    <i class="fas fa-basket-shopping mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Shopping</span>
+                </a>
+                <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200" data-target="progress">
+                    <i class="fas fa-chart-line mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Progress</span>
+                </a>
+                <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200" data-target="chat">
+                    <i class="fas fa-robot mr-3 text-green-600"></i>
+                    <span class="text-gray-700">AI Assistant</span>
+                </a>
+            </div>
+
+            <!-- User Actions -->
+            <div class="border-t pt-6 space-y-3">
+                <button id="profileBtn" class="w-full flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200 text-left">
+                    <i class="fas fa-user-circle mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Profile</span>
+                </button>
+                <button id="notificationsBtn" class="w-full flex items-center p-3 rounded-lg hover:bg-green-50 transition duration-200 text-left">
+                    <i class="fas fa-bell mr-3 text-green-600"></i>
+                    <span class="text-gray-700">Notifications</span>
+                    <span id="notificationBadge" class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+                </button>
+                <button id="logoutBtn" class="w-full flex items-center p-3 rounded-lg hover:bg-red-50 transition duration-200 text-left text-red-600">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-24 pb-16">
+        <!-- Landing Section -->
+        <section id="landing" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="gradient-bg p-10 md:p-16 text-white">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-leaf text-white text-3xl"></i>
+                        </div>
+                        <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Nourish Your Life, The Satvic Way</h1>
+                        <p class="text-white/90 text-lg md:text-xl mb-8">Personalized Ayurvedic nutrition plans, AI guidance, and daily habits to help you feel your best.</p>
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button id="heroGetStarted" class="bg-white text-green-700 px-6 py-3 rounded-lg font-medium hover:opacity-90 transition duration-200">
+                                Get Started
+                            </button>
+                            <button id="heroSignIn" class="border border-white/70 text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition duration-200">
+                                Sign In
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 md:p-12">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        <div class="border border-gray-200 rounded-xl p-6">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600 w-12 h-12 flex items-center justify-center mb-4">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Personalized Meal Plans</h3>
+                            <p class="text-gray-600">Create balanced plans tailored to your dosha, goals, and routine.</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-6">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600 w-12 h-12 flex items-center justify-center mb-4">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">AI Guidance</h3>
+                            <p class="text-gray-600">Chat with your assistant for recipes, tips, and daily motivation.</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-xl p-6">
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600 w-12 h-12 flex items-center justify-center mb-4">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Track Your Progress</h3>
+                            <p class="text-gray-600">Log check-ins to visualize your energy, mood, and wellness.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login" class="fade-in section-hidden max-w-md mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-leaf text-green-600 text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-green-700 mb-2">Welcome to Satvic</h2>
+                    <p class="text-gray-600">Your journey to wellness begins here</p>
+                </div>
+                
+                <div id="loginError" class="hidden mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span id="loginErrorText"></span>
+                    </div>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2" for="email">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2" for="password">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Enter your password" required>
+                            <button type="button" id="toggleLoginPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" id="loginBtn" class="w-full gradient-bg text-white py-3 rounded-lg hover:opacity-90 transition duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="loginBtnText">Begin Your Satvic Journey</span>
+                        <i id="loginSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                    </button>
+                </form>
+                <p class="text-center mt-6 text-gray-600">New to Satvic? <a href="#" id="showRegister" class="text-green-600 hover:underline font-medium">Create Account</a></p>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register" class="fade-in section-hidden max-w-md mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-seedling text-green-600 text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-green-700 mb-2">Join Satvic</h2>
+                    <p class="text-gray-600">Start your personalized nutrition journey</p>
+                </div>
+                
+                <div id="registerError" class="hidden mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span id="registerErrorText"></span>
+                    </div>
+                </div>
+                
+                <div id="registerSuccess" class="hidden mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span id="registerSuccessText"></span>
+                    </div>
+                </div>
+                
+                <form id="registerForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2" for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2" for="reg-email">Email</label>
+                        <input type="email" id="reg-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2" for="reg-password">Password</label>
+                        <div class="relative">
+                            <input type="password" id="reg-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Create a password (min 6 characters)" required minlength="6">
+                            <button type="button" id="toggleRegPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="mt-1 text-xs text-gray-500">
+                            Password must be at least 6 characters long
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-2" for="reg-confirm">Confirm Password</label>
+                        <div class="relative">
+                            <input type="password" id="reg-confirm" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200" placeholder="Confirm your password" required>
+                            <button type="button" id="toggleConfirmPassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="passwordMatch" class="mt-1 text-xs hidden">
+                            <span id="passwordMatchText"></span>
+                        </div>
+                    </div>
+                    <button type="submit" id="registerBtn" class="w-full gradient-bg text-white py-3 rounded-lg hover:opacity-90 transition duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="registerBtnText">Create Account</span>
+                        <i id="registerSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                    </button>
+                </form>
+                <p class="text-center mt-6 text-gray-600">Already have an account? <a href="#" id="showLogin" class="text-green-600 hover:underline font-medium">Sign In</a></p>
+            </div>
+        </section>
+
+        <!-- AI Onboarding Section -->
+        <section id="onboarding" class="fade-in section-hidden max-w-2xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-robot text-white text-4xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-green-700 mb-2">Meet Your AI Guide</h2>
+                    <p class="text-gray-600">Let's discover your health goals and create your personalized plan</p>
+                </div>
+                
+                <div id="onboardingChat" class="bg-gray-50 rounded-xl p-6 h-96 overflow-y-auto mb-6">
+                    <div class="flex items-start mb-4 chat-message">
+                        <div class="bg-green-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-robot text-green-600"></i>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm max-w-md">
+                            <p class="text-gray-800">Hello! I'm your nutrition assistant. I'm here to understand your health goals and create a personalized nutrition plan for you. Shall we begin this journey together?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <input type="text" id="onboardingInput" placeholder="Type your response here..." class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <button id="onboardingSend" class="bg-green-600 text-white px-6 py-3 rounded-r-lg hover:bg-green-700 transition duration-200">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <div id="onboardingProgressDots" class="flex justify-center space-x-2"></div>
+                    <p id="onboardingProgressText" class="text-sm text-gray-500 mt-2">Preparing your quick profile...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Your Dashboard</h1>
+                <p class="text-gray-600">Welcome back to your personalized wellness journey</p>
+            </div>
+
+            <!-- Today's Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <i class="fas fa-utensils text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Meals Today</h3>
+                            <p class="text-2xl font-bold text-green-600" id="mealsToday">0/3</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 0%" id="mealsProgress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1" id="mealsStatus">No meals logged today</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                            <i class="fas fa-weight text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Weight</h3>
+                            <p class="text-2xl font-bold text-blue-600" id="currentWeight">--</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-500" id="weightTrend">No data available</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                            <i class="fas fa-seedling text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Energy Level</h3>
+                            <p class="text-2xl font-bold text-purple-600" id="energyLevel">--</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 0%" id="energyProgress"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1" id="energyStatus">No data available</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                            <i class="fas fa-star text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">Wellness Score</h3>
+                            <p class="text-2xl font-bold text-yellow-600" id="wellnessScore">--</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-500">Based on recent check-ins</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Recommendations -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-lightbulb mr-3 text-yellow-500"></i>
+                    Today's Recommendations
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-l-4 border-green-500 pl-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Meal Suggestion</h3>
+                        <p class="text-gray-600 mb-3">Try a balanced meal with whole grains, vegetables, and lean protein</p>
+                        <button class="text-green-600 font-medium hover:underline" onclick="window.satvicApp.showSection('recipes')">View Recipes →</button>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Daily Check-in</h3>
+                        <p class="text-gray-600 mb-3">Log your progress to track your wellness journey</p>
+                        <button class="text-blue-600 font-medium hover:underline" onclick="window.satvicApp.showSection('progress')">Add Check-in →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meal Plan Section -->
+        <section id="meal-plan" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Satvic Meal Planning</h1>
+                <p class="text-gray-600">Personalized meal plans based on your dosha constitution and seasonal needs</p>
+            </div>
+
+            <!-- Meal Plan Generator -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-magic mr-3 text-purple-500"></i>
+                    AI Meal Plan Generator
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Time Period</label>
+                        <select id="mealPlanPeriod" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="daily">Today</option>
+                            <option value="weekly" selected>This Week</option>
+                            <option value="monthly">This Month</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Focus Area</label>
+                        <select id="mealPlanFocus" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="balance">Dosha Balance</option>
+                            <option value="detox">Gentle Detox</option>
+                            <option value="energy">Energy Boost</option>
+                            <option value="digestion">Digestive Health</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="generateMealPlan" class="w-full gradient-bg text-white py-3 rounded-lg hover:opacity-90 transition duration-200 font-medium">
+                            <i class="fas fa-sparkles mr-2"></i>
+                            Generate Plan
+                        </button>
+                    </div>
+                </div>
+                <div id="mealPlanResults" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Recipes Section -->
+        <section id="recipes" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Satvic Recipe Collection</h1>
+                <p class="text-gray-600">Discover traditional and modern Ayurvedic recipes tailored to your dosha</p>
+            </div>
+
+            <!-- Recipe Search & Filters -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <input type="text" id="recipeSearch" placeholder="Search recipes..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <select id="doshaFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">All Doshas</option>
+                            <option value="vata">Vata Balancing</option>
+                            <option value="pitta">Pitta Balancing</option>
+                            <option value="kapha">Kapha Balancing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="mealTypeFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">All Meals</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="snack">Snacks</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="cookingTimeFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Any Time</option>
+                            <option value="quick">Under 15 mins</option>
+                            <option value="medium">15-30 mins</option>
+                            <option value="long">30+ mins</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="searchRecipes" class="gradient-bg text-white px-6 py-3 rounded-lg hover:opacity-90 transition duration-200">
+                    <i class="fas fa-search mr-2"></i>
+                    Search Recipes
+                </button>
+            </div>
+
+            <!-- Featured Recipes -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-star mr-3 text-yellow-500"></i>
+                    Featured Satvic Recipes
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="featuredRecipes">
+                    <!-- Recipes will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Shopping Section -->
+        <section id="shopping" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Shopping Assistant</h1>
+                <p class="text-gray-600">Tell us your budget and what you want to cook. We'll suggest what to buy.</p>
+            </div>
+
+            <!-- Shopping Form -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-basket-shopping mr-3 text-green-500"></i>
+                    Plan Your Shopping
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Budget (₹)</label>
+                        <input type="number" id="shoppingBudget" min="0" step="1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="e.g., 800">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 font-medium mb-2">What do you want to make?</label>
+                        <input type="text" id="shoppingGoal" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="e.g., Paneer tikka and rotis for 4 people">
+                    </div>
+                </div>
+                <button id="generateShoppingList" class="gradient-bg text-white px-6 py-3 rounded-lg hover:opacity-90 transition duration-200">
+                    <i class="fas fa-list-check mr-2"></i>
+                    Generate Shopping List
+                </button>
+            </div>
+
+            <!-- Shopping Results -->
+            <div id="shoppingResults" class="space-y-6">
+                <div id="shoppingSummary" class="hidden bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-green-700 mb-2">Summary</h3>
+                    <p class="text-gray-700" id="shoppingSummaryText"></p>
+                </div>
+                <div id="shoppingItems" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section id="progress" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Your Progress</h1>
+                <p class="text-gray-600">Track your journey towards optimal health</p>
+            </div>
+
+            <!-- Added check-in form -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-plus-circle mr-3 text-green-500"></i>
+                    Daily Check-in
+                </h2>
+                <form id="checkinForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Weight (kg)</label>
+                        <input type="number" id="checkinWeight" step="0.1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter your weight">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Energy Level (1-10)</label>
+                        <select id="checkinEnergy" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select energy level</option>
+                            <option value="1">1 - Very Low</option>
+                            <option value="2">2 - Low</option>
+                            <option value="3">3 - Below Average</option>
+                            <option value="4">4 - Fair</option>
+                            <option value="5">5 - Average</option>
+                            <option value="6">6 - Good</option>
+                            <option value="7">7 - Very Good</option>
+                            <option value="8">8 - High</option>
+                            <option value="9">9 - Very High</option>
+                            <option value="10">10 - Excellent</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Mood (1-10)</label>
+                        <select id="checkinMood" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select mood</option>
+                            <option value="1">1 - Very Poor</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="3">3 - Below Average</option>
+                            <option value="4">4 - Fair</option>
+                            <option value="5">5 - Average</option>
+                            <option value="6">6 - Good</option>
+                            <option value="7">7 - Very Good</option>
+                            <option value="8">8 - Great</option>
+                            <option value="9">9 - Excellent</option>
+                            <option value="10">10 - Outstanding</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Sleep Quality (1-10)</label>
+                        <select id="checkinSleep" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select sleep quality</option>
+                            <option value="1">1 - Very Poor</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="3">3 - Below Average</option>
+                            <option value="4">4 - Fair</option>
+                            <option value="5">5 - Average</option>
+                            <option value="6">6 - Good</option>
+                            <option value="7">7 - Very Good</option>
+                            <option value="8">8 - Great</option>
+                            <option value="9">9 - Excellent</option>
+                            <option value="10">10 - Perfect</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Water Intake (glasses)</label>
+                        <input type="number" id="checkinWater" min="0" max="20" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Number of glasses">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Exercise (minutes)</label>
+                        <input type="number" id="checkinExercise" min="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Minutes of exercise">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 font-medium mb-2">Notes (optional)</label>
+                        <textarea id="checkinNotes" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Any additional notes about your day..."></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" id="checkinBtn" class="gradient-bg text-white px-6 py-3 rounded-lg hover:opacity-90 transition duration-200 font-medium">
+                            <i class="fas fa-save mr-2"></i>
+                            Save Check-in
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-calendar-check text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-green-600" id="totalCheckins">0</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-1">Total Check-ins</h3>
+                    <p class="text-sm text-gray-500">Keep tracking daily</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-weight text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-blue-600" id="avgWeight">--</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-1">Avg Weight</h3>
+                    <p class="text-sm text-gray-500" id="weightChange">No data yet</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-seedling text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-purple-600" id="avgEnergy">--</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-1">Avg Energy</h3>
+                    <p class="text-sm text-gray-500">Out of 10</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                            <i class="fas fa-smile text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-yellow-600" id="avgMood">--</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-1">Avg Mood</h3>
+                    <p class="text-sm text-gray-500">Out of 10</p>
+                </div>
+            </div>
+
+            <!-- Recent Check-ins -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-history mr-3 text-blue-500"></i>
+                    Recent Check-ins
+                </h2>
+                <div id="recentCheckins" class="space-y-4">
+                    <p class="text-gray-500 text-center py-8">No check-ins yet. Add your first check-in above!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">AI Satvic Assistant</h1>
+                <p class="text-gray-600">Get personalized guidance on your Ayurvedic nutrition journey</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div id="chatContainer" class="bg-gray-50 rounded-xl p-6 h-96 overflow-y-auto mb-6">
+                    <div class="flex items-start mb-4 chat-message">
+                        <div class="bg-green-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-robot text-green-600"></i>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm max-w-md">
+                            <p class="text-gray-800">Hello! I'm your Satvic AI assistant. I can help you with recipe suggestions, dosha balancing advice, seasonal eating tips, and answer any questions about Ayurvedic nutrition. How can I assist you today?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <input type="text" id="chatInput" placeholder="Ask me about Satvic nutrition, recipes, or dosha balance..." class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <button id="chatSend" class="bg-green-600 text-white px-6 py-3 rounded-r-lg hover:bg-green-700 transition duration-200">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <!-- Quick Questions -->
+                <div class="mt-6">
+                    <p class="text-sm text-gray-600 mb-3">Quick questions:</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="quick-question bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition duration-200">
+                            What should I eat for my dosha?
+                        </button>
+                        <button class="quick-question bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition duration-200">
+                            Suggest a recipe for dinner
+                        </button>
+                        <button class="quick-question bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition duration-200">
+                            How to improve digestion?
+                        </button>
+                        <button class="quick-question bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition duration-200">
+                            Seasonal eating tips
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notifications Section -->
+        <section id="notifications" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Notifications</h1>
+                <p class="text-gray-600">Stay on track with reminders and updates</p>
+            </div>
+
+            <!-- Create Reminder -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-plus-circle mr-3 text-green-500"></i>
+                    Create Reminder
+                </h2>
+                <form id="reminderForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Title</label>
+                        <input type="text" id="reminderTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Reminder title">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Date & Time</label>
+                        <input type="datetime-local" id="reminderDateTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 font-medium mb-2">Message</label>
+                        <textarea id="reminderMessage" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Reminder message..."></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="gradient-bg text-white px-6 py-3 rounded-lg hover:opacity-90 transition duration-200 font-medium">
+                            <i class="fas fa-bell mr-2"></i>
+                            Create Reminder
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-list mr-3 text-blue-500"></i>
+                    Your Notifications
+                </h2>
+                <div id="notificationsList" class="space-y-4">
+                    <p class="text-gray-500 text-center py-8">No notifications yet.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="fade-in section-hidden">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-green-700 mb-2">Profile</h1>
+                <p class="text-gray-600">Manage your account and preferences</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center">
+                    <i class="fas fa-user mr-3 text-green-500"></i>
+                    Personal Information
+                </h2>
+                <form id="profileForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Name</label>
+                        <input type="text" id="profileName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Email</label>
+                        <input type="email" id="profileEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" readonly>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Age</label>
+                        <input type="number" id="profileAge" min="1" max="120" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Your age">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Height (cm)</label>
+                        <input type="number" id="profileHeight" min="100" max="250" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Your height">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Activity Level</label>
+                        <select id="profileActivity" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select activity level</option>
+                            <option value="sedentary">Sedentary (little/no exercise)</option>
+                            <option value="light">Light (light exercise 1-3 days/week)</option>
+                            <option value="moderate">Moderate (moderate exercise 3-5 days/week)</option>
+                            <option value="active">Active (hard exercise 6-7 days/week)</option>
+                            <option value="very_active">Very Active (very hard exercise, physical job)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Health Goals</label>
+                        <select id="profileGoals" multiple class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="weight_loss">Weight Loss</option>
+                            <option value="weight_gain">Weight Gain</option>
+                            <option value="muscle_gain">Muscle Gain</option>
+                            <option value="better_energy">Better Energy</option>
+                            <option value="better_sleep">Better Sleep</option>
+                            <option value="stress_management">Stress Management</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="gradient-bg text-white px-6 py-3 rounded-lg hover:opacity-90 transition duration-200 font-medium">
+                            <i class="fas fa-save mr-2"></i>
+                            Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Load app script from static path served by Node -->
+    <script src="/templates/static/js/app.js"></script>
+</body>
+</html>
