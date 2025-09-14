@@ -36,7 +36,7 @@ A comprehensive AI-powered diet planning application that helps users create per
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/realcodedbyom/Satvic-Diet-Planner
    cd Satvic-Diet-Planner
    ```
 
