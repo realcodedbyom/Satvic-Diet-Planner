@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__, template_folder='templates', static_folder='templates/static')
 
 # Configuration
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET', 'ff3e4e7278c068f2bb8543a0cd01368b')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET', '')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)
 
 # Initialize extensions
@@ -31,7 +31,7 @@ CORS(app, origins=["*"])
 
 # MongoDB connection
 try:
-    client = MongoClient(os.getenv('MONGODB_URI', 'mongodb_url'))
+    client = MongoClient(os.getenv('MONGODB_URI', ''))
     db = client.satvic_diet_planner
     logger.info("✅ Connected to MongoDB successfully")
 except Exception as e:
@@ -49,11 +49,30 @@ try:
         import google.generativeai as genai
         
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
         
-        # Test the connection
-        test_response = model.generate_content("Hello")
-        logger.info("✅ Gemini AI configured and tested successfully")
+        # Try different model names in order of preference
+        model_names = [
+            'gemini-2.5-flash',           # Latest stable flash model
+            'gemini-2.0-flash',           # Backup flash model
+            'gemini-flash-latest',        # Generic latest
+            'gemini-2.5-pro',            # Pro model if flash unavailable
+            'gemini-pro-latest'           # Last resort
+        ]
+        
+        model = None
+        for model_name in model_names:
+            try:
+                model = genai.GenerativeModel(model_name)
+                # Test the connection
+                test_response = model.generate_content("Hello")
+                logger.info(f"✅ Gemini AI configured successfully with model: {model_name}")
+                break
+            except Exception as model_error:
+                logger.warning(f"⚠️ Model {model_name} failed: {model_error}")
+                continue
+        
+        if model is None:
+            raise Exception("No working Gemini model found")
     
 except Exception as e:
     logger.error(f"❌ Gemini AI configuration failed: {e}")
